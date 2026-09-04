@@ -5,12 +5,18 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import Admin from "./pages/Admin";
+import FarmManager from "./pages/FarmManager";
 import Home from "./pages/Home";
+import Worker from "./pages/Worker";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/roles/admin" component={Admin} />
+      <Route path="/roles/manager" component={FarmManager} />
+      <Route path="/roles/worker" component={Worker} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

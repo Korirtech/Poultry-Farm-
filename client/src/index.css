@@ -298,3 +298,101 @@ h2 { font-size: clamp(2.7rem, 5vw, 5.45rem); line-height: .96; color: var(--pine
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Role pages: preserve the Field Notes system while giving each permission boundary a focused editorial chapter. */
+.role-nav { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2.4rem); }
+.role-nav a { color: var(--pine); text-decoration: none; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; padding-bottom: 5px; border-bottom: 1px solid transparent; }
+.role-nav a:hover, .role-nav a.active { color: var(--clay); border-bottom-color: var(--clay); }
+.back-link { display: inline-flex; align-items: center; gap: 7px; color: var(--pine); text-decoration: none; font-size: .67rem; text-transform: uppercase; letter-spacing: .09em; }
+.back-link:hover { color: var(--clay); }
+.role-hero { color: var(--oat); background: var(--pine); padding: clamp(4rem, 8vw, 8rem) 0 clamp(5rem, 9vw, 9rem); }
+.role-hero-orange { background: var(--pine); }
+.role-hero-pine { background: #2d5b43; }
+.role-hero-sand { background: #6e7154; }
+.role-hero-inner { grid-template-columns: minmax(96px, 14%) 1fr minmax(220px, 29%); align-items: end; }
+.role-hero .section-index { color: #b4c2ad; }
+.role-hero .section-index span:first-child { color: #efb98f; }
+.role-hero-copy { max-width: 670px; }
+.role-hero .eyebrow { color: #e7b18d; margin-bottom: 1.4rem; }
+.role-title-line { display: flex; align-items: center; gap: 18px; }
+.role-page-icon { width: 52px; height: 52px; display: grid; place-items: center; border: 1px solid rgba(243,238,227,.52); color: #e7b18d; flex: 0 0 52px; }
+.role-hero h1 { color: var(--oat); font-size: clamp(3.8rem, 7vw, 7rem); margin-bottom: 0; }
+.role-hero-copy > p { color: #d3dfcf; max-width: 590px; font-size: 1.03rem; line-height: 1.7; margin: 2rem 0 1.8rem; }
+.role-page-meta { display: flex; align-items: center; gap: 11px; color: #a9b9a5; font-size: .61rem; text-transform: uppercase; letter-spacing: .11em; }
+.role-page-meta i { width: 3px; height: 3px; background: #e7b18d; border-radius: 50%; }
+.role-signal-card { background: var(--oat); color: var(--pine); padding: 20px; border: 1px solid #e7b18d; box-shadow: 10px 12px 0 rgba(12,29,21,.18); }
+.role-signal-card .card-kicker { color: var(--clay); border-bottom-color: var(--rule); }
+.role-signal-card strong { display: block; font: 400 1.45rem/1.18 "DM Serif Display", serif; letter-spacing: -.02em; margin: 22px 0 36px; }
+.signal-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--rule); color: #778477; font-size: .61rem; text-transform: uppercase; letter-spacing: .09em; }
+.signal-card-footer svg { color: var(--clay); }
+.role-body { grid-template-columns: minmax(96px, 14%) 1fr; padding-top: 8rem; padding-bottom: 8rem; }
+.role-body-content { min-width: 0; }
+.role-body-heading { display: flex; justify-content: space-between; align-items: end; gap: 3rem; }
+.role-body-heading h2 { margin-bottom: 0; }
+.role-aside-note { width: 205px; padding-left: 16px; border-left: 1px solid var(--clay); margin-bottom: 8px; }
+.role-aside-note span { color: var(--clay); font-size: .59rem; text-transform: uppercase; letter-spacing: .12em; }
+.role-aside-note p { color: #68756a; font: 400 1.08rem/1.2 "DM Serif Display", serif; margin: 9px 0 0; }
+.responsibility-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--rule); margin-top: 4.5rem; }
+.responsibility-item { display: flex; gap: 18px; padding: 20px 28px 20px 0; border-bottom: 1px solid var(--rule); }
+.responsibility-item:nth-child(even) { padding-left: 28px; border-left: 1px solid var(--rule); }
+.responsibility-item span { color: var(--clay); font-size: .62rem; letter-spacing: .1em; padding-top: 3px; }
+.responsibility-item p { color: #516053; margin: 0; font-size: .92rem; line-height: 1.55; max-width: 400px; }
+.role-permissions-layout { grid-template-columns: minmax(96px, 14%) 1fr; padding-top: 6.5rem; padding-bottom: 7rem; }
+.permissions-band h2 { margin-bottom: 2.5rem; }
+.permission-list { max-width: 720px; display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(243,238,227,.28); }
+.permission-list div { display: flex; align-items: center; gap: 12px; color: #d4dfd0; font-size: .86rem; padding: 17px 18px 17px 0; border-bottom: 1px solid rgba(243,238,227,.2); }
+.permission-list div:nth-child(even) { padding-left: 18px; border-left: 1px solid rgba(243,238,227,.2); }
+.permission-list svg { color: #e7b18d; flex: 0 0 auto; }
+.role-workflow { grid-template-columns: minmax(96px, 14%) 1fr; padding-top: 8rem; padding-bottom: 8rem; }
+.role-workflow-content h2 { max-width: 720px; }
+.role-flow { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); margin-top: 4rem; }
+.role-flow-item { position: relative; min-height: 225px; padding: 20px 26px 0 0; border-right: 1px solid var(--rule); margin-right: 25px; }
+.role-flow-item:last-child { border-right: 0; margin-right: 0; }
+.flow-number { color: var(--clay); font-size: .63rem; letter-spacing: .1em; }
+.flow-icon { color: var(--pine); margin: 25px 0 15px; }
+.role-flow-item h3 { color: var(--pine); font: 400 1.5rem/1 "DM Serif Display", serif; margin-bottom: 9px; }
+.role-flow-item p { color: #657166; font-size: .84rem; line-height: 1.55; max-width: 190px; }
+.flow-arrow { position: absolute; right: -31px; top: 51px; z-index: 1; color: var(--clay); }
+.role-handoff { border-top: 1px solid var(--rule); }
+.role-handoff-inner { grid-template-columns: 1fr 1fr; padding-top: 6rem; padding-bottom: 6rem; gap: 5rem; }
+.role-handoff-label h2 { font-size: clamp(2.5rem, 4.5vw, 4.7rem); }
+.role-handoff-copy { align-self: end; }
+.role-handoff-copy > p { color: #5f6c60; font-size: .95rem; line-height: 1.7; max-width: 500px; }
+.handoff-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; }
+.handoff-links a { display: inline-flex; align-items: center; gap: 7px; color: var(--pine); text-decoration: none; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--clay); padding-bottom: 6px; }
+.handoff-links a:hover { color: var(--clay); }
+.footer-meta a { color: inherit; text-decoration: none; }
+.footer-meta a:hover { color: var(--clay); }
+
+@media (max-width: 900px) {
+  .role-nav { gap: 1rem; }
+  .back-link { font-size: .61rem; }
+  .role-hero-inner { grid-template-columns: 90px 1fr; }
+  .role-signal-card { grid-column: 2; max-width: 340px; margin-top: 3rem; }
+  .role-body-heading { display: block; }
+  .role-aside-note { margin-top: 2rem; }
+  .role-handoff-inner { gap: 2rem; }
+}
+
+@media (max-width: 700px) {
+  .role-nav { display: none; }
+  .back-link { margin-left: auto; margin-right: 12px; }
+  .role-hero { padding-top: 4rem; padding-bottom: 4.5rem; }
+  .role-hero-inner, .role-body, .role-permissions-layout, .role-workflow, .role-handoff-inner { grid-template-columns: 1fr; }
+  .role-hero-inner .section-index, .role-body > .section-index, .role-permissions-layout > .section-index, .role-workflow > .section-index { margin-bottom: 1.7rem; }
+  .role-hero h1 { font-size: clamp(3.5rem, 16vw, 5.4rem); }
+  .role-title-line { align-items: end; gap: 12px; }
+  .role-page-icon { width: 40px; height: 40px; flex-basis: 40px; }
+  .role-hero-copy > p { font-size: .92rem; }
+  .role-signal-card { grid-column: auto; margin-top: 2.5rem; }
+  .role-body, .role-workflow { padding-top: 5.5rem; padding-bottom: 5.5rem; }
+  .responsibility-grid, .permission-list { grid-template-columns: 1fr; margin-top: 3rem; }
+  .responsibility-item:nth-child(even), .permission-list div:nth-child(even) { padding-left: 0; border-left: 0; }
+  .permission-list div { padding-right: 0; }
+  .role-flow { grid-template-columns: 1fr; margin-top: 3rem; }
+  .role-flow-item { min-height: 175px; border-right: 0; border-bottom: 1px solid var(--rule); margin-right: 0; padding-right: 0; }
+  .role-flow-item:last-child { border-bottom: 0; }
+  .flow-arrow { display: none; }
+  .role-handoff-inner { padding-top: 5rem; padding-bottom: 5rem; }
+  .role-handoff-copy { align-self: auto; }
+}

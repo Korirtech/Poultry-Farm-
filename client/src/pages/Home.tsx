@@ -163,7 +163,7 @@ export default function Home() {
           <div className="role-grid section-grid">
             {roles.map((role) => {
               const Icon = role.icon;
-              return <article className={`role-card role-${role.tone}`} key={role.title}><div className="role-top"><span className="role-number">{role.number}</span><Icon size={20} strokeWidth={1.7} /></div><h3>{role.title}</h3><p>{role.text}</p><a href="#trust">Permission boundary <ChevronRight size={14} /></a></article>;
+              return <article className={`role-card role-${role.tone}`} key={role.title}><div className="role-top"><span className="role-number">{role.number}</span><Icon size={20} strokeWidth={1.7} /></div><h3>{role.title}</h3><p>{role.text}</p><a href={`/roles/${role.title === "Farm manager" ? "manager" : role.title.toLowerCase()}`}>Permission boundary <ChevronRight size={14} /></a></article>;
             })}
           </div>
           <div className="model-strip section-grid">
