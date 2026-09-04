@@ -619,7 +619,7 @@ export default function Home() {
         </div>
         <p>Batch-level operations for Kenyan poultry farms.</p>
         <div className="footer-meta">
-          <span>Blueprint / 2026</span>
+          <span>Korir Farm / 2026</span>
           <span>Built for the next clear decision.</span>
         </div>
       </footer>
