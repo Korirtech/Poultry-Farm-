@@ -35,7 +35,7 @@ const markImage = "/manus-storage/flockline-mark_7fa89f7e.png";
 
 const navItems = [
   { label: "The thesis", href: "#thesis" },
-  { label: "Blueprint", href: "#blueprint" },
+  { label: "Blueprint", href: "#Dashboard" },
   { label: "Daily loop", href: "#loop" },
   { label: "Phases", href: "#phases" },
   { label: "Compare roles", href: "/roles" },
