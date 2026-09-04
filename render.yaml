@@ -6,6 +6,9 @@ services:
     runtime: static
     buildCommand: pnpm install --frozen-lockfile && pnpm build
     staticPublishPath: ./dist/public
+    envVars:
+      - key: VITE_DJANGO_API_URL
+        sync: false
     previews:
       generation: automatic
     routes:
