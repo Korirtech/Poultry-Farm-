@@ -13,7 +13,7 @@ const baseFarms: Farm[] = [
   { id: "farm-highland", name: "Highland Layers", county: "Nakuru", houses: 2, status: "Active" },
 ];
 const basePeople: Member[] = [
-  { id: "member-james", name: "James Mwangi", email: "james@greenfields.co.ke", role: "Farm Manager", farmId: "farm-greenfields", active: true },
+  { id: "member-james", name: "Korir Emmanuel", email: "james@greenfields.co.ke", role: "Farm Manager", farmId: "farm-greenfields", active: true },
   { id: "member-amina", name: "Amina Wanjiku", email: "amina@greenfields.co.ke", role: "Worker", farmId: "farm-greenfields", active: true },
   { id: "member-peter", name: "Peter Otieno", email: "peter@highland.co.ke", role: "Farm Manager", farmId: "farm-highland", active: true },
 ];

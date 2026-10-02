@@ -232,7 +232,7 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
         const Icon = item.icon;
         return <button key={item.key} className={section === item.key ? "selected" : ""} onClick={() => showSection(item.key)}><Icon size={17} strokeWidth={1.8} /><span>{item.label}</span>{item.key === "alerts" && activeAlerts.length > 0 && <i>{activeAlerts.length}</i>}</button>;
       })}</nav>
-      <div className="farm-sidebar-bottom"><span className="farm-avatar">{role === "worker" ? "AW" : "JM"}</span><span><strong>{role === "worker" ? "Amina Wanjiku" : "James Mwangi"}</strong><small>{role === "worker" ? "Farm worker" : "Farm manager"}</small></span><span className="farm-status-dot" /></div>
+      <div className="farm-sidebar-bottom"><span className="farm-avatar">{role === "worker" ? "AW" : "KE"}</span><span><strong>{role === "worker" ? "Amina Wanjiku" : "Korir Emmanuel"}</strong><small>{role === "worker" ? "Farm worker" : "Farm manager"}</small></span><span className="farm-status-dot" /></div>
     </aside>
 
     <main className="farm-main">
