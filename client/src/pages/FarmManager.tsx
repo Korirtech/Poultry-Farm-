@@ -1,6 +1,6 @@
 // Style direction: Field Notes / Operational Editorial — warm paper, deep pine, clay marker, asymmetric information hierarchy.
-import RolePage from "./RolePage";
+import FarmWorkspace from "./FarmWorkspace";
 
 export default function FarmManager() {
-  return <RolePage role="manager" />;
+  return <FarmWorkspace />;
 }
