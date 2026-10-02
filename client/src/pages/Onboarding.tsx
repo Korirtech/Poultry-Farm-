@@ -343,8 +343,8 @@ export default function Onboarding() {
                   <a className="button button-primary" href={`/roles/${role}`}>
                     Open {roleLabel} workspace <ArrowUpRight size={17} />
                   </a>
-                  <a className="text-link" href={`/roles/${role}`}>
-                    Review {roleLabel} view <ArrowRight size={16} />
+                  <a className="text-link" href="/roles">
+                    Compare access roles <ArrowRight size={16} />
                   </a>
                 </div>
               </div>

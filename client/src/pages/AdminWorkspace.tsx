@@ -1,5 +1,5 @@
 // Style direction: Field Notes / Operational Editorial — warm paper, deep pine, clay marker, asymmetric information hierarchy.
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Building2, Check, CircleUserRound, LayoutDashboard, Plus, ShieldCheck, UsersRound } from "lucide-react";
 
 type AdminSection = "overview" | "farms" | "people";
@@ -97,11 +97,11 @@ export default function AdminWorkspace() {
   </div>;
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return <label className="farm-field"><span>{label}</span>{children}</label>;
 }
 
-function Metric({ label, value, detail, icon }: { label: string; value: string; detail: string; icon: React.ReactNode }) {
+function Metric({ label, value, detail, icon }: { label: string; value: string; detail: string; icon: ReactNode }) {
   return <section className="farm-metric"><span className="farm-metric-icon">{icon}</span><span className="farm-metric-label">{label}</span><strong>{value}</strong><small>{detail}</small></section>;
 }
 
