@@ -209,7 +209,7 @@ export default function FarmWorkspace() {
     <main className="farm-main">
       <header className="farm-topbar"><div className="farm-breadcrumb">Farm workspace <span>/</span> <strong>{page.title}</strong></div><div className="farm-top-actions"><span><span className="farm-live-dot" /> All changes saved</span><a href="/roles">Role guide <ArrowUpRight size={14} /></a></div></header>
       <div className="farm-page-content">
-        <div className="farm-page-heading"><div><p className="farm-overline">THURSDAY, {new Date().toLocaleDateString("en-KE", { day: "2-digit", month: "long", year: "numeric" }).toUpperCase()}</p><h1>{page.title}</h1><p className="farm-page-description">{page.description}</p></div><div className="farm-heading-note"><Activity size={16} /><span>Farm status<strong>{activeAlerts.length ? `${activeAlerts.length} items need review` : "Within expected range"}</strong></span></div></div>
+        <div className="farm-page-heading"><div><p className="farm-overline">{new Date().toLocaleDateString("en-KE", { weekday: "long", day: "2-digit", month: "long", year: "numeric" }).toUpperCase()}</p><h1>{page.title}</h1><p className="farm-page-description">{page.description}</p></div><div className="farm-heading-note"><Activity size={16} /><span>Farm status<strong>{activeAlerts.length ? `${activeAlerts.length} items need review` : "Within expected range"}</strong></span></div></div>
         {savedNotice && <div className="farm-save-notice"><CheckCircle2 size={16} /> {savedNotice}</div>}
 
         {section === "overview" && <>

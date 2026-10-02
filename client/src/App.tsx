@@ -21,6 +21,7 @@ function Router() {
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/login" component={Login} />
       <Route path="/roles/admin" component={Admin} />
+      <Route path="/roles/manager/:section" component={FarmManager} />
       <Route path="/roles/manager" component={FarmManager} />
       <Route path="/roles/worker" component={Worker} />
       <Route path="/404" component={NotFound} />
