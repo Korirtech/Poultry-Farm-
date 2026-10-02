@@ -101,6 +101,9 @@ export default function Login() {
               >
                 {loading ? "Checking…" : "Sign in"} <ArrowUpRight size={17} />
               </button>
+              <a className="auth-demo-link" href="/roles/manager">
+                Open the local demo workspace <ArrowUpRight size={14} />
+              </a>
               <p className="auth-note">
                 The Django backend must enforce role permissions server-side.
                 This page only begins the authenticated session.

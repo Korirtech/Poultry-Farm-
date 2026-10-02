@@ -106,6 +106,8 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
   const [section, setSection] = useState<Section>(() => sectionFromLocation(role));
   const [records, setRecords] = useState<FarmRecord[]>(loadRecords);
   const [savedNotice, setSavedNotice] = useState("");
+  const [reportFrom, setReportFrom] = useState("");
+  const [reportTo, setReportTo] = useState("");
   const [farmProfile] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("flockline.farm-profile.v1") || "null") as { name?: string; county?: string } | null;
@@ -168,7 +170,7 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
 
   const flocks = records.filter(record => record.kind === "flock");
   const production = records.filter(record => record.kind === "production");
-  const tasks = records.filter(record => record.kind === "task");
+  const tasks = records.filter(record => record.kind === "task" && (role === "manager" || record.assignee === "Amina" || record.assignee === "Amina Wanjiku"));
   const finance = records.filter(record => record.kind === "finance");
   const activeAlerts = getAlerts(records);
   const todayProduction = production.filter(record => record.date === today());
@@ -178,6 +180,13 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
   const income = finance.filter(record => record.status === "Income").reduce((sum, record) => sum + (record.amount || 0), 0);
   const expenses = finance.filter(record => record.status === "Expense").reduce((sum, record) => sum + (record.amount || 0), 0);
   const page = sectionTitles[section];
+  const reportRecords = records.filter(record => (!reportFrom || record.date >= reportFrom) && (!reportTo || record.date <= reportTo));
+  const reportFlocks = reportRecords.filter(record => record.kind === "flock");
+  const reportProduction = reportRecords.filter(record => record.kind === "production");
+  const reportTasks = reportRecords.filter(record => record.kind === "task");
+  const reportFinance = reportRecords.filter(record => record.kind === "finance");
+  const reportIncome = reportFinance.filter(record => record.status === "Income").reduce((sum, record) => sum + (record.amount || 0), 0);
+  const reportExpenses = reportFinance.filter(record => record.status === "Expense").reduce((sum, record) => sum + (record.amount || 0), 0);
 
   const recordForm = (kind: RecordKind) => {
     if (kind === "flock") return <form className="farm-form" onSubmit={event => saveRecord(event, kind)}>
@@ -217,7 +226,7 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
   return <div className="farm-workspace">
     <aside className="farm-sidebar">
       <a className="farm-brand" href="/"><span className="farm-brand-mark"><img src="/manus-storage/flockline-mark_7fa89f7e.png" alt="" /></span><span>Flockline<span>.</span></span></a>
-      <div className="farm-farm-switch"><span className="farm-overline">CURRENT FARM</span><strong>{farmProfile?.name || "Greenfields Poultry"}</strong><small>{farmProfile?.county ? `${farmProfile.county} County` : "Kiambu County"} <span>⌄</span></small></div>
+      <div className="farm-farm-switch"><span className="farm-overline">CURRENT FARM</span><strong>{farmProfile?.name || "Greenfields Poultry"}</strong><small>{farmProfile?.county ? `${farmProfile.county} County` : "Kiambu County"}</small></div>
       <span className="farm-overline nav-caption">OPERATIONS</span>
       <nav className="farm-side-nav" aria-label="Farm operations">{visibleNavigation.map(item => {
         const Icon = item.icon;
@@ -250,7 +259,7 @@ export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRo
         {section === "tasks" && <ModuleLayout title="Work queue" kicker="TEAM SCHEDULE" formTitle="Assign farm work" form={recordForm("task")} showForm={role === "manager"}><div className="farm-task-list">{tasks.map(record => <div className="farm-task-row" key={record.id}><button type="button" className={`farm-task-check ${record.status === "Done" ? "done" : ""}`} onClick={() => toggleTask(record.id)} aria-label={`${record.status === "Done" ? "Reopen" : "Complete"} ${record.label}`} title={record.status === "Done" ? "Reopen task" : "Mark complete"}><CheckCircle2 size={17} /></button><div><strong>{record.label}</strong><small>{record.category} · Assigned to {record.assignee}</small></div><span className={`farm-pill ${record.due && record.due < today() && record.status !== "Done" ? "red" : "neutral"}`}>{record.due && record.due < today() && record.status !== "Done" ? "Overdue" : record.status}</span><time>{record.due}</time></div>)}{tasks.length === 0 && <EmptyState text="No tasks scheduled. Add a task to create the team's work queue." />}</div></ModuleLayout>}
         {section === "finance" && <ModuleLayout title="Income & expenses" kicker="FARM LEDGER" formTitle="Log a transaction" form={recordForm("finance")}><div className="farm-finance-summary"><div><span>Recorded income</span><strong>{currency(income)}</strong></div><div><span>Recorded costs</span><strong>{currency(expenses)}</strong></div><div><span>Net recorded</span><strong>{currency(income - expenses)}</strong></div></div><div className="farm-table-wrap"><table className="farm-table"><thead><tr><th>DESCRIPTION</th><th>CATEGORY</th><th>DATE</th><th>TYPE</th><th>AMOUNT</th></tr></thead><tbody>{finance.map(record => <tr key={record.id}><td><strong>{record.label}</strong></td><td>{record.category}</td><td>{record.date}</td><td><span className={`farm-pill ${record.status === "Income" ? "green" : "neutral"}`}>{record.status}</span></td><td className="farm-money">{currency(record.amount || 0)}</td></tr>)}</tbody></table>{finance.length === 0 && <EmptyState text="No transactions recorded. Start the farm ledger with income or a cost." />}</div></ModuleLayout>}
         {section === "alerts" && <section className="farm-panel farm-alerts-page"><PanelTitle kicker="TRANSPARENT THRESHOLDS" title="Signals from your records" />{activeAlerts.length ? activeAlerts.map(alert => <AlertRow key={alert.id} alert={alert} expanded />) : <EmptyState text="No active alerts. New records are checked against the rules below." />}<div className="farm-rule-note"><ShieldAlert size={18} /><div><strong>How alerts are determined</strong><p>Mortality is flagged when daily deaths exceed 1% of the flock's recorded bird count. Tasks are overdue when their due date has passed and their status is not complete. Review the source record and farm context before acting.</p></div></div></section>}
-        {section === "reports" && <><div className="farm-report-toolbar"><div><span className="farm-overline">ALL TIME · CURRENT FARM</span><p>{records.length} records across {flocks.length} flocks</p></div><button className="farm-primary" onClick={() => exportRecords(records)}><ArrowDownToLine size={16} /> Export CSV</button></div><div className="farm-report-grid"><Metric label="Flocks registered" value={String(flocks.length)} detail="Active batches" icon={<Layers3 />} /><Metric label="Eggs recorded" value={production.reduce((sum, record) => sum + (record.eggs || 0), 0).toLocaleString()} detail={`${production.length} daily entries`} icon={<Egg />} /><Metric label="Tasks scheduled" value={String(tasks.length)} detail={`${tasks.filter(task => task.status === "Done").length} completed`} icon={<UsersRound />} /><Metric label="Net recorded" value={currency(income - expenses)} detail="Income less expenses" icon={<Coins />} /></div><section className="farm-panel farm-report-records"><PanelTitle kicker="SOURCE DATA" title="Recent records" />{records.map(record => <RecordRow key={record.id} record={record} />)}</section></>}
+        {section === "reports" && <><div className="farm-report-toolbar"><div><span className="farm-overline">FILTERED VIEW · CURRENT FARM</span><p>{reportRecords.length} records across {reportFlocks.length} flocks</p></div><div className="farm-report-filters"><label>From<input type="date" value={reportFrom} onChange={event => setReportFrom(event.target.value)} /></label><label>To<input type="date" value={reportTo} onChange={event => setReportTo(event.target.value)} /></label><button className="farm-primary" onClick={() => exportRecords(reportRecords)}><ArrowDownToLine size={16} /> Export CSV</button></div></div><div className="farm-report-grid"><Metric label="Flocks registered" value={String(reportFlocks.length)} detail="In selected period" icon={<Layers3 />} /><Metric label="Eggs recorded" value={reportProduction.reduce((sum, record) => sum + (record.eggs || 0), 0).toLocaleString()} detail={`${reportProduction.length} daily entries`} icon={<Egg />} /><Metric label="Tasks scheduled" value={String(reportTasks.length)} detail={`${reportTasks.filter(task => task.status === "Done").length} completed`} icon={<UsersRound />} /><Metric label="Net recorded" value={currency(reportIncome - reportExpenses)} detail="Income less expenses" icon={<Coins />} /></div><section className="farm-panel farm-report-records"><PanelTitle kicker="SOURCE DATA" title="Records in selected period" />{reportRecords.length ? reportRecords.map(record => <RecordRow key={record.id} record={record} />) : <EmptyState text="No records match this date range." />}</section></>}
       </div>
     </main>
   </div>;
