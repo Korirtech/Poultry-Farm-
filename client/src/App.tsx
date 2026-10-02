@@ -10,19 +10,20 @@ import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import RoleComparison from "./pages/RoleComparison";
 import FarmManager from "./pages/FarmManager";
-import Home from "./pages/Home";
 import Worker from "./pages/Worker";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={FarmManager} />
       <Route path="/roles" component={RoleComparison} />
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/login" component={Login} />
+      <Route path="/roles/admin/:section" component={Admin} />
       <Route path="/roles/admin" component={Admin} />
       <Route path="/roles/manager/:section" component={FarmManager} />
       <Route path="/roles/manager" component={FarmManager} />
+      <Route path="/roles/worker/:section" component={Worker} />
       <Route path="/roles/worker" component={Worker} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

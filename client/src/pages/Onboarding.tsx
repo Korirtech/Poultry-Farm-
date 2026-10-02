@@ -60,7 +60,35 @@ export default function Onboarding() {
 
   function finish(event: FormEvent) {
     event.preventDefault();
-    setSubmitted(true);
+    const date = new Date().toISOString().slice(0, 10);
+    const flock = {
+      id: crypto.randomUUID(),
+      kind: "flock",
+      label: `${flockType} · First batch`,
+      detail: `${flockType} · placed ${date}`,
+      date,
+      birds: Number(count),
+      house: "House 01",
+      status: "Active",
+    };
+    try {
+      localStorage.setItem(
+        "flockline.farm-profile.v1",
+        JSON.stringify({ name: farmName.trim(), county, createdAt: date })
+      );
+      const savedRecords = JSON.parse(
+        localStorage.getItem("flockline.farm-records.v1") || "[]"
+      ) as unknown;
+      const records = Array.isArray(savedRecords) ? savedRecords : [];
+      localStorage.setItem(
+        "flockline.farm-records.v1",
+        JSON.stringify([flock, ...records])
+      );
+      setError("");
+      setSubmitted(true);
+    } catch {
+      setError("Setup could not be saved in this browser. Check storage access and try again.");
+    }
   }
 
   return (
@@ -259,9 +287,8 @@ export default function Onboarding() {
                       </div>
                     </div>
                     <p className="review-note">
-                      In the connected Django product, this step will create the
-                      farm, its first flock, and your role-scoped workspace.
-                      This static flow is ready for that API handoff.
+                      Farm details and the first batch will be saved in this
+                      browser. Connect Django to share them across your team.
                     </p>
                   </div>
                 )}
@@ -309,13 +336,12 @@ export default function Onboarding() {
                 </h2>
                 <p>
                   Your {flockType.toLowerCase()} flock of{" "}
-                  {Number(count).toLocaleString()} birds is ready for the next
-                  step. Connect the Django backend to persist this setup and
-                  enforce the {roleLabel} permission boundary.
+                  {Number(count).toLocaleString()} birds is saved in this
+                  browser and ready for the {roleLabel.toLowerCase()} workspace.
                 </p>
                 <div className="complete-actions">
-                  <a className="button button-primary" href="/">
-                    Return to blueprint <ArrowUpRight size={17} />
+                  <a className="button button-primary" href={`/roles/${role}`}>
+                    Open {roleLabel} workspace <ArrowUpRight size={17} />
                   </a>
                   <a className="text-link" href={`/roles/${role}`}>
                     Review {roleLabel} view <ArrowRight size={16} />

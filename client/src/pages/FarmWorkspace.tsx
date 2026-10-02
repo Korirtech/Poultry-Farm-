@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 type Section = "overview" | "flocks" | "production" | "tasks" | "finance" | "alerts" | "reports";
+type WorkspaceRole = "manager" | "worker";
 type RecordKind = "flock" | "production" | "task" | "finance";
 type FarmRecord = {
   id: string;
@@ -95,13 +96,26 @@ function currency(value: number) {
   return new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 0 }).format(value);
 }
 
-export default function FarmWorkspace() {
-  const [section, setSection] = useState<Section>(() => {
-    const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-    return navigation.some(item => item.key === segment) ? segment as Section : "overview";
-  });
+function sectionFromLocation(role: WorkspaceRole): Section {
+  const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
+  if (role === "worker" && !["production", "tasks"].includes(segment || "")) return "overview";
+  return navigation.some(item => item.key === segment) ? segment as Section : "overview";
+}
+
+export default function FarmWorkspace({ role = "manager" }: { role?: WorkspaceRole }) {
+  const [section, setSection] = useState<Section>(() => sectionFromLocation(role));
   const [records, setRecords] = useState<FarmRecord[]>(loadRecords);
   const [savedNotice, setSavedNotice] = useState("");
+  const [farmProfile] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("flockline.farm-profile.v1") || "null") as { name?: string; county?: string } | null;
+    } catch {
+      return null;
+    }
+  });
+  const visibleNavigation = role === "worker"
+    ? navigation.filter(item => ["overview", "production", "tasks"].includes(item.key))
+    : navigation;
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(records));
@@ -109,8 +123,7 @@ export default function FarmWorkspace() {
 
   useEffect(() => {
     const onPopState = () => {
-      const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-      setSection(navigation.some(item => item.key === segment) ? segment as Section : "overview");
+      setSection(sectionFromLocation(role));
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -118,7 +131,7 @@ export default function FarmWorkspace() {
 
   const showSection = (next: Section) => {
     setSection(next);
-    const path = next === "overview" ? "/roles/manager" : `/roles/manager/${next}`;
+    const path = next === "overview" ? `/roles/${role}` : `/roles/${role}/${next}`;
     window.history.pushState({}, "", path);
     setSavedNotice("");
   };
@@ -160,6 +173,7 @@ export default function FarmWorkspace() {
   const activeAlerts = getAlerts(records);
   const todayProduction = production.filter(record => record.date === today());
   const eggsToday = todayProduction.reduce((sum, record) => sum + (record.eggs || 0), 0);
+  const mortalityToday = todayProduction.reduce((sum, record) => sum + (record.mortality || 0), 0);
   const openTasks = tasks.filter(record => record.status !== "Done").length;
   const income = finance.filter(record => record.status === "Income").reduce((sum, record) => sum + (record.amount || 0), 0);
   const expenses = finance.filter(record => record.status === "Expense").reduce((sum, record) => sum + (record.amount || 0), 0);
@@ -203,13 +217,13 @@ export default function FarmWorkspace() {
   return <div className="farm-workspace">
     <aside className="farm-sidebar">
       <a className="farm-brand" href="/"><span className="farm-brand-mark"><img src="/manus-storage/flockline-mark_7fa89f7e.png" alt="" /></span><span>Flockline<span>.</span></span></a>
-      <div className="farm-farm-switch"><span className="farm-overline">CURRENT FARM</span><strong>Greenfields Poultry</strong><small>Kiambu County <span>⌄</span></small></div>
+      <div className="farm-farm-switch"><span className="farm-overline">CURRENT FARM</span><strong>{farmProfile?.name || "Greenfields Poultry"}</strong><small>{farmProfile?.county ? `${farmProfile.county} County` : "Kiambu County"} <span>⌄</span></small></div>
       <span className="farm-overline nav-caption">OPERATIONS</span>
-      <nav className="farm-side-nav" aria-label="Farm operations">{navigation.map(item => {
+      <nav className="farm-side-nav" aria-label="Farm operations">{visibleNavigation.map(item => {
         const Icon = item.icon;
         return <button key={item.key} className={section === item.key ? "selected" : ""} onClick={() => showSection(item.key)}><Icon size={17} strokeWidth={1.8} /><span>{item.label}</span>{item.key === "alerts" && activeAlerts.length > 0 && <i>{activeAlerts.length}</i>}</button>;
       })}</nav>
-      <div className="farm-sidebar-bottom"><span className="farm-avatar">JM</span><span><strong>James Mwangi</strong><small>Farm manager</small></span><span className="farm-status-dot" /></div>
+      <div className="farm-sidebar-bottom"><span className="farm-avatar">{role === "worker" ? "AW" : "JM"}</span><span><strong>{role === "worker" ? "Amina Wanjiku" : "James Mwangi"}</strong><small>{role === "worker" ? "Farm worker" : "Farm manager"}</small></span><span className="farm-status-dot" /></div>
     </aside>
 
     <main className="farm-main">
@@ -223,15 +237,17 @@ export default function FarmWorkspace() {
             <Metric label="Active flocks" value={String(flocks.length)} detail={`${flocks.reduce((sum, flock) => sum + (flock.birds || 0), 0).toLocaleString()} birds on farm`} icon={<Layers3 />} />
             <Metric label="Eggs collected today" value={eggsToday.toLocaleString()} detail={`${todayProduction.length} production ${todayProduction.length === 1 ? "entry" : "entries"}`} icon={<Egg />} />
             <Metric label="Open tasks" value={String(openTasks)} detail="Across all farm teams" icon={<ClipboardList />} />
-            <Metric label="Net recorded" value={currency(income - expenses)} detail={`${currency(income)} income · ${currency(expenses)} costs`} icon={<Coins />} />
+            {role === "worker"
+              ? <Metric label="Mortality recorded" value={mortalityToday.toLocaleString()} detail="Birds recorded today" icon={<Activity />} />
+              : <Metric label="Net recorded" value={currency(income - expenses)} detail={`${currency(income)} income · ${currency(expenses)} costs`} icon={<Coins />} />}
           </div>
           <div className="farm-overview-grid"><section className="farm-panel farm-recent-panel"><PanelTitle kicker="LATEST ENTRIES" title="Today on the farm" action={() => showSection("reports")} actionLabel="All records" />{records.slice(0, 5).map(record => <RecordRow key={record.id} record={record} />)}</section><section className="farm-panel farm-alert-panel"><PanelTitle kicker="RULE-BASED REVIEW" title="Needs a closer look" action={() => showSection("alerts")} actionLabel="Review alerts" />{activeAlerts.length ? activeAlerts.slice(0, 3).map(alert => <AlertRow key={alert.id} alert={alert} />) : <p className="farm-muted">No current alerts. The latest records are within configured thresholds.</p>}</section></div>
-          <div className="farm-quick-actions"><span className="farm-overline">QUICK ENTRY</span><button onClick={() => showSection("production")}><Egg size={16} /> Record production</button><button onClick={() => showSection("tasks")}><ClipboardList size={16} /> Assign a task</button><button onClick={() => showSection("finance")}><Coins size={16} /> Log transaction</button></div>
+          <div className="farm-quick-actions"><span className="farm-overline">QUICK ENTRY</span><button onClick={() => showSection("production")}><Egg size={16} /> Record production</button><button onClick={() => showSection("tasks")}><ClipboardList size={16} /> {role === "worker" ? "View assigned tasks" : "Assign a task"}</button>{role === "manager" && <button onClick={() => showSection("finance")}><Coins size={16} /> Log transaction</button>}</div>
         </>}
 
         {section === "flocks" && <ModuleLayout title="Batch register" kicker="FLOCK INVENTORY" formTitle="Register a batch" form={recordForm("flock")}><div className="farm-table-wrap"><table className="farm-table"><thead><tr><th>FLOCK / BATCH</th><th>HOUSE</th><th>PLACED</th><th>BIRDS</th><th>STATUS</th></tr></thead><tbody>{flocks.map(record => <tr key={record.id}><td><strong>{record.label}</strong><small>{record.detail}</small></td><td>{record.house}</td><td>{record.date}</td><td>{record.birds?.toLocaleString()}</td><td><span className="farm-pill green">{record.status}</span></td></tr>)}</tbody></table>{flocks.length === 0 && <EmptyState text="No flocks registered yet. Add your first batch to begin." />}</div></ModuleLayout>}
         {section === "production" && <ModuleLayout title="Daily production log" kicker="DAILY RECORDS" formTitle="Record today's figures" form={recordForm("production")}><div className="farm-table-wrap"><table className="farm-table"><thead><tr><th>FLOCK / BATCH</th><th>DATE</th><th>EGGS</th><th>MORTALITY</th><th>FEED (KG)</th></tr></thead><tbody>{production.map(record => <tr key={record.id}><td><strong>{record.flock}</strong><small>{record.label}</small></td><td>{record.date}</td><td>{record.eggs?.toLocaleString()}</td><td>{record.mortality}</td><td>{record.feed}</td></tr>)}</tbody></table>{production.length === 0 && <EmptyState text="No production records yet. Record collection, mortality, and feed." />}</div></ModuleLayout>}
-        {section === "tasks" && <ModuleLayout title="Work queue" kicker="TEAM SCHEDULE" formTitle="Assign farm work" form={recordForm("task")}><div className="farm-task-list">{tasks.map(record => <div className="farm-task-row" key={record.id}><button type="button" className={`farm-task-check ${record.status === "Done" ? "done" : ""}`} onClick={() => toggleTask(record.id)} aria-label={`${record.status === "Done" ? "Reopen" : "Complete"} ${record.label}`} title={record.status === "Done" ? "Reopen task" : "Mark complete"}><CheckCircle2 size={17} /></button><div><strong>{record.label}</strong><small>{record.category} · Assigned to {record.assignee}</small></div><span className={`farm-pill ${record.due && record.due < today() && record.status !== "Done" ? "red" : "neutral"}`}>{record.due && record.due < today() && record.status !== "Done" ? "Overdue" : record.status}</span><time>{record.due}</time></div>)}{tasks.length === 0 && <EmptyState text="No tasks scheduled. Add a task to create the team's work queue." />}</div></ModuleLayout>}
+        {section === "tasks" && <ModuleLayout title="Work queue" kicker="TEAM SCHEDULE" formTitle="Assign farm work" form={recordForm("task")} showForm={role === "manager"}><div className="farm-task-list">{tasks.map(record => <div className="farm-task-row" key={record.id}><button type="button" className={`farm-task-check ${record.status === "Done" ? "done" : ""}`} onClick={() => toggleTask(record.id)} aria-label={`${record.status === "Done" ? "Reopen" : "Complete"} ${record.label}`} title={record.status === "Done" ? "Reopen task" : "Mark complete"}><CheckCircle2 size={17} /></button><div><strong>{record.label}</strong><small>{record.category} · Assigned to {record.assignee}</small></div><span className={`farm-pill ${record.due && record.due < today() && record.status !== "Done" ? "red" : "neutral"}`}>{record.due && record.due < today() && record.status !== "Done" ? "Overdue" : record.status}</span><time>{record.due}</time></div>)}{tasks.length === 0 && <EmptyState text="No tasks scheduled. Add a task to create the team's work queue." />}</div></ModuleLayout>}
         {section === "finance" && <ModuleLayout title="Income & expenses" kicker="FARM LEDGER" formTitle="Log a transaction" form={recordForm("finance")}><div className="farm-finance-summary"><div><span>Recorded income</span><strong>{currency(income)}</strong></div><div><span>Recorded costs</span><strong>{currency(expenses)}</strong></div><div><span>Net recorded</span><strong>{currency(income - expenses)}</strong></div></div><div className="farm-table-wrap"><table className="farm-table"><thead><tr><th>DESCRIPTION</th><th>CATEGORY</th><th>DATE</th><th>TYPE</th><th>AMOUNT</th></tr></thead><tbody>{finance.map(record => <tr key={record.id}><td><strong>{record.label}</strong></td><td>{record.category}</td><td>{record.date}</td><td><span className={`farm-pill ${record.status === "Income" ? "green" : "neutral"}`}>{record.status}</span></td><td className="farm-money">{currency(record.amount || 0)}</td></tr>)}</tbody></table>{finance.length === 0 && <EmptyState text="No transactions recorded. Start the farm ledger with income or a cost." />}</div></ModuleLayout>}
         {section === "alerts" && <section className="farm-panel farm-alerts-page"><PanelTitle kicker="TRANSPARENT THRESHOLDS" title="Signals from your records" />{activeAlerts.length ? activeAlerts.map(alert => <AlertRow key={alert.id} alert={alert} expanded />) : <EmptyState text="No active alerts. New records are checked against the rules below." />}<div className="farm-rule-note"><ShieldAlert size={18} /><div><strong>How alerts are determined</strong><p>Mortality is flagged when daily deaths exceed 1% of the flock's recorded bird count. Tasks are overdue when their due date has passed and their status is not complete. Review the source record and farm context before acting.</p></div></div></section>}
         {section === "reports" && <><div className="farm-report-toolbar"><div><span className="farm-overline">ALL TIME · CURRENT FARM</span><p>{records.length} records across {flocks.length} flocks</p></div><button className="farm-primary" onClick={() => exportRecords(records)}><ArrowDownToLine size={16} /> Export CSV</button></div><div className="farm-report-grid"><Metric label="Flocks registered" value={String(flocks.length)} detail="Active batches" icon={<Layers3 />} /><Metric label="Eggs recorded" value={production.reduce((sum, record) => sum + (record.eggs || 0), 0).toLocaleString()} detail={`${production.length} daily entries`} icon={<Egg />} /><Metric label="Tasks scheduled" value={String(tasks.length)} detail={`${tasks.filter(task => task.status === "Done").length} completed`} icon={<UsersRound />} /><Metric label="Net recorded" value={currency(income - expenses)} detail="Income less expenses" icon={<Coins />} /></div><section className="farm-panel farm-report-records"><PanelTitle kicker="SOURCE DATA" title="Recent records" />{records.map(record => <RecordRow key={record.id} record={record} />)}</section></>}
@@ -260,8 +276,8 @@ function PanelTitle({ kicker, title, action, actionLabel }: { kicker: string; ti
   return <div className="farm-panel-title"><div><span className="farm-overline">{kicker}</span><h2>{title}</h2></div>{action && <button onClick={action}>{actionLabel}<ArrowUpRight size={14} /></button>}</div>;
 }
 
-function ModuleLayout({ title, kicker, formTitle, form, children }: { title: string; kicker: string; formTitle: string; form: ReactNode; children: ReactNode }) {
-  return <div className="farm-module-layout"><section className="farm-panel farm-records-panel"><PanelTitle kicker={kicker} title={title} />{children}</section><aside className="farm-panel farm-entry-panel"><span className="farm-overline">NEW RECORD</span><h2>{formTitle}</h2>{form}</aside></div>;
+function ModuleLayout({ title, kicker, formTitle, form, children, showForm = true }: { title: string; kicker: string; formTitle: string; form: ReactNode; children: ReactNode; showForm?: boolean }) {
+  return <div className="farm-module-layout"><section className="farm-panel farm-records-panel"><PanelTitle kicker={kicker} title={title} />{children}</section>{showForm && <aside className="farm-panel farm-entry-panel"><span className="farm-overline">NEW RECORD</span><h2>{formTitle}</h2>{form}</aside>}</div>;
 }
 
 function RecordRow({ record }: { record: FarmRecord }) {

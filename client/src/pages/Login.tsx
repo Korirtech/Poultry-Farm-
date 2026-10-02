@@ -16,8 +16,8 @@ export default function Login() {
     setMessage("");
     setLoading(true);
     try {
-      await signIn(email, password);
-      navigate("/onboarding?role=manager");
+      const user = await signIn(email, password);
+      navigate(`/roles/${user.role}`);
     } catch (error) {
       setMessage(
         error instanceof Error
