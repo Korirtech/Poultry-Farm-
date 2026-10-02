@@ -1860,6 +1860,8 @@ h2 {
 .farm-task-list { display: grid; }
 .farm-task-row { display: grid; grid-template-columns: 22px minmax(0,1fr) auto auto; align-items: center; gap: 10px; padding: 13px 0; border-top: 1px solid #ecece5; }
 .farm-task-check { color: #8a9789; }
+.farm-task-row button.farm-task-check { display: grid; width: 22px; height: 26px; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.farm-task-row button.farm-task-check:hover { color: var(--farm-green); }
 .farm-task-check.done { color: #4d8156; }
 .farm-task-row > div { display: grid; gap: 4px; }
 .farm-task-row strong { color: #35443b; font-size: 0.72rem; font-weight: 500; }
